@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>个人记账</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">¥</span>
+    <div>
+      <h1>个人记账</h1>
+      <p class="sub">收入 · 支出 · 清晰可查</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn ghost" id="btnExportCsv" type="button">导出 CSV</button>
+    <button class="btn ghost" id="btnExportXlsx" type="button">导出 Excel</button>
+    <button class="btn primary" id="btnNew" type="button">+ 记一笔</button>
+  </div>
+</header>
+
+<main>
+  <section class="cards" aria-label="合计">
+    <div class="card income">
+      <span class="card-label">收入合计</span>
+      <strong id="sumIncome">¥0.00</strong>
+    </div>
+    <div class="card expense">
+      <span class="card-label">支出合计</span>
+      <strong id="sumExpense">¥0.00</strong>
+    </div>
+    <div class="card balance">
+      <span class="card-label">结余</span>
+      <strong id="sumBalance">¥0.00</strong>
+    </div>
+    <div class="card count">
+      <span class="card-label">笔数</span>
+      <strong id="sumCount">0</strong>
+    </div>
+  </section>
+
+  <section class="panel filters" aria-label="筛选">
+    <div class="field">
+      <label for="fFrom">开始日期</label>
+      <input type="date" id="fFrom">
+    </div>
+    <div class="field">
+      <label for="fTo">结束日期</label>
+      <input type="date" id="fTo">
+    </div>
+    <div class="field">
+      <label for="fKind">类型</label>
+      <select id="fKind">
+        <option value="">全部</option>
+        <option value="income">收入</option>
+        <option value="expense">支出</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="fPerson">人员</label>
+      <select id="fPerson"><option value="">全部</option></select>
+    </div>
+    <div class="field">
+      <label for="fCategory">分类</label>
+      <select id="fCategory"><option value="">全部</option></select>
+    </div>
+    <div class="field grow">
+      <label for="fKeyword">关键词</label>
+      <input type="search" id="fKeyword" placeholder="备注 / 人员 / 分类">
+    </div>
+    <div class="field actions">
+      <button class="btn ghost" id="btnReset" type="button">重置</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="table-wrap">
+      <table id="entryTable">
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>类型</th>
+            <th class="num">金额</th>
+            <th>收入人 / 支出人</th>
+            <th>分类</th>
+            <th>备注</th>
+            <th class="ops">操作</th>
+          </tr>
+        </thead>
+        <tbody id="entryBody"></tbody>
+      </table>
+      <p class="empty" id="emptyHint" hidden>还没有记录，点右上角「记一笔」开始吧。</p>
+    </div>
+
+    <div class="pager">
+      <span id="pageInfo" class="muted"></span>
+      <div class="pager-actions">
+        <button class="btn ghost" id="btnPrev" type="button">上一页</button>
+        <button class="btn ghost" id="btnNext" type="button">下一页</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 记账表单：全屏遮罩 + 居中面板 -->
+<div class="overlay" id="overlay" hidden>
+  <form class="dialog" id="entryForm" autocomplete="off">
+    <h2 id="dialogTitle">记一笔</h2>
+
+    <div class="segmented" role="radiogroup" aria-label="类型">
+      <label class="seg expense">
+        <input type="radio" name="kind" value="expense" checked>
+        <span>支出</span>
+      </label>
+      <label class="seg income">
+        <input type="radio" name="kind" value="income">
+        <span>收入</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label for="amount">金额（元）</label>
+      <input type="text" inputmode="decimal" id="amount" name="amount" placeholder="0.00" required>
+    </div>
+
+    <div class="field">
+      <label for="occurredAt">时间</label>
+      <input type="datetime-local" id="occurredAt" name="occurredAt" required>
+    </div>
+
+    <div class="field">
+      <label for="person" id="personLabel">支出人</label>
+      <input type="text" id="person" name="person" list="personOptions" maxlength="50" placeholder="选填">
+      <datalist id="personOptions"></datalist>
+    </div>
+
+    <div class="field">
+      <label for="category">分类</label>
+      <input type="text" id="category" name="category" list="categoryOptions" maxlength="50" placeholder="如：餐饮、工资（选填）">
+      <datalist id="categoryOptions"></datalist>
+    </div>
+
+    <div class="field">
+      <label for="note">备注</label>
+      <textarea id="note" name="note" rows="2" maxlength="500" placeholder="选填"></textarea>
+    </div>
+
+    <p class="form-error" id="formError" hidden></p>
+
+    <div class="dialog-actions">
+      <button class="btn ghost" type="button" id="btnCancel">取消</button>
+      <button class="btn primary" type="submit" id="btnSave">保存</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

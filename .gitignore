@@ -1,0 +1,12 @@
+# 构建产物与本地数据
+/bookkeeping
+/bookkeeping.exe
+/data
+*.db
+*.db-shm
+*.db-wal
+
+# 编辑器
+.idea/
+.vscode/
+.DS_Store

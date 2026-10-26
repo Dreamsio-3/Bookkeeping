@@ -1,0 +1,29 @@
+services:
+  bookkeeping:
+    build:
+      context: .
+      args:
+        # 国内网络可用 goproxy.cn；海外部署可改为 https://proxy.golang.org,direct
+        GOPROXY: https://goproxy.cn,direct
+    image: bookkeeping:latest
+    container_name: bookkeeping
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+      PORT: "8080"
+      # 设置后访问需要输入用户名（任意）和该口令；留空则无需登录。
+      # APP_PASSWORD: "换成你自己的口令"
+      BACKUP_KEEP_DAYS: "7"
+    volumes:
+      # 命名卷：数据库、备份都保存在 /data，容器重建不丢数据。
+      - bookkeeping-data:/data
+    # 单实例内存上限，SQLite 场景下 192MB 足够，可按需调整。
+    mem_limit: 192m
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  bookkeeping-data:
+    name: bookkeeping-data
